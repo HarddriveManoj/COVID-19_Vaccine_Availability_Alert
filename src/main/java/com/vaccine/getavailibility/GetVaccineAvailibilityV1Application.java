@@ -15,10 +15,7 @@ import javax.mail.internet.AddressException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,8 +38,9 @@ public class GetVaccineAvailibilityV1Application {
 	public static void main(String[] args) throws ParseException, AddressException, MessagingException, IOException {
 
 		GetVaccineAvailibilityV1Application getVaccineAvailibilityV1Application = new GetVaccineAvailibilityV1Application();
-		try {
+
 			while (true) {
+				try {
 					String formattedDate = getVaccineAvailibilityV1Application.changeDate(1);
 					System.out.println("----------------------->  " + formattedDate);
 					try {
@@ -58,11 +56,12 @@ public class GetVaccineAvailibilityV1Application {
 						e.printStackTrace();
 					}
 
-				Thread.sleep(Integer.parseInt(PropertiesCache.getInstance().getProperty("execution.interval")) * 60 * 1000 * 20);
+				Thread.sleep(Integer.parseInt(PropertiesCache.getInstance().getProperty("execution.interval")) * 10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
 
 	}
 
@@ -78,39 +77,45 @@ public class GetVaccineAvailibilityV1Application {
 	void makeAvailibilityCall(String date, String[] districtId)
 			throws AddressException, MessagingException, IOException {
 		List<Response> responseList = new ArrayList();
-		HttpHeaders headers = new HttpHeaders();
 
 		RestTemplate restTemplate = new RestTemplate();
-		HttpEntity<String> request = new HttpEntity<String>(headers);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		httpHeaders.set("Accept-Language", "en_US");
+		httpHeaders.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0");
+		HttpEntity<String> request = new HttpEntity<String>(httpHeaders);
 
 		boolean responseBool = false;
 		for (String str : Arrays.asList(districtId)) {
 
 			String url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode="
 					+ str + "&date=" + date;
-			System.out.print(url);
+			System.out.println("URL: " + url);
+			System.out.println("--------------------");
 			ResponseEntity<Root> result = restTemplate.exchange(url, HttpMethod.GET, request, Root.class);
+			System.out.println("REsponse: " + result.toString());
+			if(result.getBody().centers != null) {
+				for (Center center : result.getBody().centers) {
+					for (Session session : center.sessions) {
+						if (session.min_age_limit < 45 && session.available_capacity > 0) {
+							Response response = new Response();
+							response.setMin_age_limit(session.min_age_limit);
+							response.setName("Center Name is::" + center.name + " :District::" + center.district_name
+									+ "-" + session.vaccine);
+							response.setDate("::Session date is::" + session.date);
+							response.setAvailable_capacity(session.available_capacity);
+							response.setVaccine(session.vaccine);
+							response.setPincode(center.pincode);
+							responseBool = true;
+							System.out.println("Center name is ::" + center.name + ":" + center.district_name
+									+ "::Available capacity::" + session.available_capacity + "::: Date-->" + session.date
+									+ "::" + "Minimum Age Limit::" + session.min_age_limit);
+							responseList.add(response);
 
-			for (Center center : result.getBody().centers) {
-				for (Session session : center.sessions) {
-					if (session.min_age_limit < 45 && session.available_capacity > 0) {
-						Response response = new Response();
-						response.setMin_age_limit(session.min_age_limit);
-						response.setName("Center Name is::" + center.name + " :District::" + center.district_name
-								+ "-" + session.vaccine);
-						response.setDate("::Session date is::" + session.date);
-						response.setAvailable_capacity(session.available_capacity);
-						response.setVaccine(session.vaccine);
-						response.setPincode(center.pincode);
-						responseBool = true;
-						System.out.println("Center name is ::" + center.name + ":" + center.district_name
-								+ "::Available capacity::" + session.available_capacity + "::: Date-->" + session.date
-								+ "::" + "Minimum Age Limit::" + session.min_age_limit);
-						responseList.add(response);
-
+						}
 					}
-				}
 
+				}
 			}
 		}
 
