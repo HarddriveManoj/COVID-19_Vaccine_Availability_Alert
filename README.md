@@ -21,11 +21,12 @@ email.to=abc@gmail.com
 email.cc=abc@gmail.com,abc@gmail.com
 email.bcc=abc@gmail.com,abc@gmail.com
 
-spring.cowin.districtidarray= 140,141,142,143,144,145,146,147,148,149,150, 363, 188, 650, 651, 392,505,506,314,265,276,663,664
+spring.cowin.districtidarray= 363
 #choose your respective districts from districtmaster.json file
+# PUNE DISTRICT IS 363
 
 execution.interval=5
-# Put this value in minutes
+# Put this value in minutes, I have disabled this 
 
 **Step 2: mvn clean install**
 
@@ -37,8 +38,4 @@ As soon as vaccine appointment is uploaded, Email will content as below -->
 
 
 Center Name is::New Bhosari (18-44) :District::Pune-	::Available capacity is ::76	::Session date is::03-05-2021	::Minimum age limit is ::18	::Pincode is ::411026
-Center Name is::Manchar SDH(18 To 44 Yrs) :District::Pune-	::Available capacity is ::1	::Session date is::03-05-2021	::Minimum age limit is ::18	::Pincode is ::410503
-Center Name is::New Bhosari (18-44) :District::Pune-	::Available capacity is ::76	::Session date is::03-05-2021	::Minimum age limit is ::18	::Pincode is ::411026
-Center Name is::New Jijamata Hospital-2(18-44) :District::Pune-	::Available capacity is ::184	::Session date is::03-05-2021	::Minimum age limit is ::18	::Pincode is ::411017
-Center Name is::Manchar SDH(18 To 44 Yrs) :District::Pune-	::Available capacity is ::1	::Session date is::03-05-2021	::Minimum age limit is ::18	::Pincode is ::410503
 
