@@ -56,7 +56,7 @@ public class GetVaccineAvailibilityV1Application {
 						e.printStackTrace();
 					}
 
-				Thread.sleep(Integer.parseInt(PropertiesCache.getInstance().getProperty("execution.interval")) * 10000);
+				Thread.sleep(Integer.parseInt(PropertiesCache.getInstance().getProperty("execution.interval")) * 4 * 1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -88,7 +88,7 @@ public class GetVaccineAvailibilityV1Application {
 		boolean responseBool = false;
 		for (String str : Arrays.asList(districtId)) {
 
-			String url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode="
+			String url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="
 					+ str + "&date=" + date;
 			System.out.println("URL: " + url);
 			System.out.println("--------------------");
