@@ -1,4 +1,4 @@
-# GetVaccineAvailibilityAlert
+# COVID-19_Vaccine_Availability_Alert
 Auto Alert for vaccine availibility from COWIN Public APIs
 
 **Step 1:Update application.properties**
